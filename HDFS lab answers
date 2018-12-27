@@ -1,0 +1,43 @@
+[cloudera@quickstart ~]$ hdfs dfs -ls /user/$USER
+Found 4 items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-26 17:00 /user/cloudera/Sqooplab
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 15:56 /user/cloudera/categories
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 13:19 /user/cloudera/departments
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:39 /user/cloudera/warehouse
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/$USER/data
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/$USER/data/input
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/$USER/data/output
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/$USER/data/source
+[cloudera@quickstart ~]$ hdfs dfs -rm /user/$USER/data/source
+rm: `/user/cloudera/data/source': Is a directory
+[cloudera@quickstart ~]$ hdfs dfs -rmdir /user/$USER/data/source
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/$USER/source
+[cloudera@quickstart ~]$ hdfs dfs -cp /home/cloudera/Sqoopimportfile.txt /user/$USER/data/output
+cp: `/home/cloudera/Sqoopimportfile.txt': No such file or directory
+[cloudera@quickstart ~]$ hdfs dfs -put /home/cloudera/Sqoopimportfile.txt
+[cloudera@quickstart ~]$ hdfs dfs -cp /user/$USER/Sqoopimportfile.txt /user/$USER/data/output
+[cloudera@quickstart ~]$ hdfs dfs -m /user/$USER/data/output/Sqoopimportfile.txt /user/$USER/data/input
+-m: Unknown command
+[cloudera@quickstart ~]$ hdfs dfs -mv /user/$USER/data/output/Sqoopimportfile.txt /user/$USER/data/input
+[cloudera@quickstart ~]$ hdfs dfs -rm -R /user/$USER/data/output/
+Deleted /user/cloudera/data/output
+[cloudera@quickstart ~]$ hdfs dfs -cat /user/$USER/data/input/Sqoopimportfile.txt
+import
+--connect
+jdbc:mysql://quickstart:3306/retail_db
+--username
+retail_dba
+--password
+cloudera
+[cloudera@quickstart ~]$ hdfs dfs -tail /user/$USER/data/input/Sqoopimportfile.txt
+import
+--connect
+jdbc:mysql://quickstart:3306/retail_db
+--username
+retail_dba
+--password
+cloudera
+[cloudera@quickstart ~]$ hdfs dfs -touchz /user/$USER/data/input/example2
+[cloudera@quickstart ~]$ hdfs dfs -test -z /user/$USER/data/input/example2
+[cloudera@quickstart ~]$ hdfs dfs -rm /user/$USER/data/input/example2
+Deleted /user/cloudera/data/input/example2
