@@ -1,0 +1,199 @@
+## Q2 Copy db_a categories without specifying target directory 
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --table categories --m 1
+18/12/23 15:56:48 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 73.2915 seconds (14.0398 bytes/sec)
+18/12/23 15:56:48 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+
+## Q3 Copy retail_db categories with a target directory 
+
+ Copy  “retail_db.categories” table to hdfs in a directory name “categories_target”.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --table categories --m 1 --target-dir 
+/user/cloudera/Sqooplab/categories_target
+
+18/12/23 17:32:06 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 57.0631 seconds (18.0327 bytes/sec)
+18/12/23 17:32:06 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_target
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 17:32 Sqooplab/categories_target/_SUCCESS
+-rw-r--r--   1 cloudera cloudera   	1029 2018-12-23 17:32 Sqooplab/categories_target/part-m-00000
+
+## Q4 Copy “retail_db.categories” table to hdfs, in a warehouse directory name “categories_warehouse”.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --table categories --m 1 --warehouse-dir 
+/user/cloudera/Sqooplab/categories_warehouse
+
+18/12/23 18:27:49 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 40.5386 seconds (25.3832 bytes/sec)
+18/12/23 18:27:49 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_warehouse
+Found 1 items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 18:27 Sqooplab/categories_warehouse/categories
+
+## Q5	Import data from categories table, where category=22 ( Data should be stored in categories_subset2)
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --query 'select* from categories where 
+category_id = 22 AND $CONDITIONS' --m 1 --target-dir /user/cloudera/Sqooplab/categories_subset2
+
+18/12/23 18:02:22 INFO mapreduce.ImportJobBase: Transferred 17 bytes in 44.2708 seconds (0.384 bytes/sec)
+18/12/23 18:02:22 INFO mapreduce.ImportJobBase: Retrieved 1 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset2
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 18:02 Sqooplab/categories_subset2/_SUCCESS
+-rw-r--r--   1 cloudera cloudera     	17 2018-12-23 18:02 Sqooplab/categories_subset2/part-m-00000
+
+## Q6	Import data from categories table, where category>22 ( Data should be stored in categories_subset).
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --query 'select* from categories where 
+category_id >  22 AND $CONDITIONS' --m 1 --target-dir /user/cloudera/Sqooplab/categories_subset
+
+18/12/23 18:34:46 INFO mapreduce.ImportJobBase: Transferred 626 bytes in 38.5698 seconds (16.2303 bytes/sec)
+18/12/23 18:34:46 INFO mapreduce.ImportJobBase: Retrieved 36 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 18:34 Sqooplab/categories_subset/_SUCCESS
+-rw-r--r--   1 cloudera cloudera    	626 2018-12-23 18:34 Sqooplab/categories_subset/part-m-00000
+
+## Q7	Import data from categories table, where category between 1 and 22 ( Data should be stored in categories_subset_3)
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --query 'select* from categories where 
+category_id between 1 AND  22 AND $CONDITIONS' --m 1 --target-dir /user/cloudera/Sqooplab/categories_subset3
+
+18/12/23 18:51:53 INFO mapreduce.ImportJobBase: Transferred 403 bytes in 43.5968 seconds (9.2438 bytes/sec)
+18/12/23 18:51:53 INFO mapreduce.ImportJobBase: Retrieved 22 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset3
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 18:51 Sqooplab/categories_subset3/_SUCCESS
+-rw-r--r--   1 cloudera cloudera    	403 2018-12-23 18:51 Sqooplab/categories_subset3/part-m-00000
+
+## Q8 While importing categories data change the delimiter to “|”( Data should be stored in categories_subset_4)
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --fields-terminated-by \| --table categories 
+--m 1 --target-dir /user/cloudera/Sqooplab/categories_subset4
+
+18/12/23 21:49:57 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 48.1102 seconds (21.3884 bytes/sec)
+18/12/23 21:49:57 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset4
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 21:49 Sqooplab/categories_subset4/_SUCCESS
+-rw-r--r--   1 cloudera cloudera   	1029 2018-12-23 21:49 Sqooplab/categories_subset4/part-m-00000
+
+
+## Q9 Import data from categories table and restrict the import to category_name, category_id columns only with delimiter as “|”
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --query 'select category_name, category_id 
+from categories where  $CONDITIONS' --fields-terminated-by \|  --m 1 --target-dir /user/cloudera/Sqooplab/categories_subset5
+18/12/23 21:57:38 INFO mapreduce.ImportJobBase: Transferred 913 bytes in 45.3467 seconds (20.1338 bytes/sec)
+18/12/23 21:57:38 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset5
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 21:57 Sqooplab/categories_subset5/_SUCCESS
+-rw-r--r--   1 cloudera cloudera    	913 2018-12-23 21:57 Sqooplab/categories_subset5/part-m-00000
+
+
+## Q10 Add null values in the table , Import data from categories table ( in Categores_subset_7 directory) using “|” 
+delimiter and category_id between 1 and 61 and encode null values for both string and non string columns.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --query 'select category_name, 
+category_id from categories where category_id between 1 AND 61 AND  $CONDITIONS' --fields-terminated-by \0 --fields-terminated-by \|  
+--m 1 --target-dir /user/cloudera/Sqooplab/categories_subset6
+
+
+18/12/23 22:17:49 INFO mapreduce.ImportJobBase: Transferred 913 bytes in 52.7402 seconds (17.3113 bytes/sec)
+18/12/23 22:17:49 INFO mapreduce.ImportJobBase: Retrieved 58 records
+
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset6
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-23 22:17 Sqooplab/categories_subset6/_SUCCESS
+-rw-r--r--   1 cloudera cloudera    	913 2018-12-23 22:17 Sqooplab/categories_subset6/part-m-00000
+
+## Q11 Import entire schema retail_dba in a directory categories_subset_all tables.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportalltables.txt --direct --warehouse-dir 
+/user/cloudera/Sqooplab/categories_subset-all
+
+18/12/23 22:53:21 INFO mapreduce.ImportJobBase: Transferred 169.2529 KB in 56.109 seconds (3.0165 KB/sec)
+18/12/23 22:53:21 INFO mapreduce.ImportJobBase: Retrieved 1345 records.
+
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/categories_subset-all
+Found 6 items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:48 Sqooplab/categories_subset-all/categories
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:49 Sqooplab/categories_subset-all/customers
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:50 Sqooplab/categories_subset-all/departments
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:51 Sqooplab/categories_subset-all/order_items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:52 Sqooplab/categories_subset-all/orders
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-23 22:53 Sqooplab/categories_subset-all/products
+
+
+## Q12 List all tables using sqoop command from retail_db.
+
+[cloudera@quickstart ~]$ sqoop list-tables --connect jdbc:mysql://quickstart:3306/retail_db --username retail_dba --password cloudera
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+18/12/23 18:39:07 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.13.0
+18/12/23 18:39:07 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+18/12/23 18:39:08 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+categories
+customers
+departments
+order_items
+orders
+products
+
+
+## Q13Write simple sqoop eval command to check wherther you hava permission to read database tables or not.
+
+## Q14 Import all ther tables as avro files in /user/cloudera/warehouse/retail_db/
+
+[cloudera@quickstart ~]$ sqoop import-all-tables --connect jdbc:mysql://quickstart:3306/retail_db --username retail_dba 
+--password cloudera --as-avrodatafile --warehouse-dir /user/cloudera/warehouse/retail_db/
+
+18/12/24 12:46:31 INFO mapreduce.ImportJobBase: Transferred 173.918 KB in 62.8406 seconds (2.7676 KB/sec)
+18/12/24 12:46:31 INFO mapreduce.ImportJobBase: Retrieved 1345 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls warehouse/retail_db
+Found 6 items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:40 warehouse/retail_db/categories
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:41 warehouse/retail_db/customers
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:42 warehouse/retail_db/departments
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:43 warehouse/retail_db/order_items
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:45 warehouse/retail_db/orders
+drwxr-xr-x   - cloudera cloudera      	0 2018-12-24 12:46 warehouse/retail_db/products
+
+
+
+## Q15 Import departments table as a text file in /user/cloudera/departmens.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportoptions.txt --table departments --as-textfile --m 1 
+--target-dir /user/cloudera/departments
+
+18/12/24 13:20:01 INFO mapreduce.ImportJobBase: Transferred 60 bytes in 34.7911 seconds (1.7246 bytes/sec)
+18/12/24 13:20:01 INFO mapreduce.ImportJobBase: Retrieved 6 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls departments
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-24 13:19 departments/_SUCCESS
+-rw-r--r--   1 cloudera cloudera     	60 2018-12-24 13:19 departments/part-m-00000
+
+
+## Q16 Import joined result of orders and order_items table on join on orders.order_id=order_items.order_item_order_id.
+
+
+## Q17 Import orders table in such a way that table is parititioned in 2 files and also make sure to use order_id columns 
+for sqoop to user for boundary conditions, fields terminated by “|” and lines terminated by ‘\n’.
+
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportfile.txt --table orders --m 1 --boundary-query
+"select min(order_id), max(order_id) from orders" --split-by order_id --fields-terminated-by \| --lines-terminated-by \n 
+--target-dir /user/cloudera/Sqooplab/practice
+
+
+
+18/12/26 17:00:38 INFO mapreduce.ImportJobBase: Transferred 2.861 MB in 32.7288 seconds (89.5123 KB/sec)
+18/12/26 17:00:38 INFO mapreduce.ImportJobBase: Retrieved 68883 records.
+[cloudera@quickstart ~]$ hdfs dfs -ls Sqooplab/practice
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2018-12-26 17:00 Sqooplab/practice/_SUCCESS
+-rw-r--r--   1 cloudera cloudera	2999944 2018-12-26 17:00 Sqooplab/practice/part-m-00000
+
+
+## Q18 Create sqoop job to import categories and execute the job
+
+
