@@ -218,6 +218,18 @@ Found 2 items
 
 ## Q16 Import joined result of orders and order_items table on join on orders.order_id=order_items.order_item_order_id.
 
+[cloudera@quickstart ~]$ sqoop --options-file Sqoopimportfile.txt --query "select * from orders d join 
+order_items c on d.order_id = c.order_item_order_id WHERE \$CONDITIONS" --m 1 --target-dir /user/cloudera/leftjoin
+
+19/01/07 15:45:04 INFO mapreduce.ImportJobBase: Transferred 12.3139 MB in 65.8736 seconds (191.4188 KB/sec)
+19/01/07 15:45:04 INFO mapreduce.ImportJobBase: Retrieved 172198 records.
+
+[cloudera@quickstart ~]$ hdfs dfs -ls leftjoin
+Found 2 items
+-rw-r--r--   1 cloudera cloudera      	0 2019-01-07 15:45 leftjoin/_SUCCESS
+-rw-r--r--   1 cloudera cloudera   12912069 2019-01-07 15:44 leftjoin/part-m-00000
+
+
 
 ## Q17 Import orders table in such a way that table is parititioned in 2 files and also make sure to use order_id columns 
 for sqoop to user for boundary conditions, fields terminated by “|” and lines terminated by ‘\n’.
@@ -237,5 +249,24 @@ Found 2 items
 
 
 ## Q18 Create sqoop job to import categories and execute the job
+
+[cloudera@quickstart ~]$ sqoop job --create lab -- import --connect jdbc:mysql://quickstart:3306/retail_db --username retail_dba --password cloudera --table categories --m 1
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+19/01/07 13:04:34 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.13.0
+19/01/07 13:04:36 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+[cloudera@quickstart ~]$ sqoop job --list
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+19/01/07 13:04:45 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.13.0
+Available jobs:
+  lab
+
+[cloudera@quickstart ~]$ sqoop job --exec lab
+
+
+19/01/07 13:11:55 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 35.6037 seconds (28.9015 bytes/sec)
+19/01/07 13:11:55 INFO mapreduce.ImportJobBase: Retrieved 58 records.
+
 
 
